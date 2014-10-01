@@ -53,10 +53,12 @@
     <Compile Include="DataAccess\IUnitOfWork.cs" />
     <Compile Include="DataAccess\Repository.cs" />
     <Compile Include="DataAccess\UnitOfWork.cs" />
+    <Compile Include="Exceptions\AppObjectNotFoundException.cs" />
     <Compile Include="Models\Entities\CourseInstance.cs" />
     <Compile Include="Models\Entities\CourseTemplate.cs" />
     <Compile Include="Models\Entities\Person.cs" />
     <Compile Include="Models\Entities\Semester.cs" />
+    <Compile Include="Models\Entities\StudentRegistration.cs" />
     <Compile Include="Models\Entities\TeacherRegistration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\CoursesServiceProvider.cs" />
