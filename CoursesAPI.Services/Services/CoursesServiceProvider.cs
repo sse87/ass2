@@ -71,6 +71,33 @@ namespace CoursesAPI.Services.Services
 			return result;
 		}
 
+		public Project AddProjectCourse(int courseInstanceID, Project model)
+		{
+			var courseInstance = _courseInstances.All()
+				.SingleOrDefault(ci => ci.ID == courseInstanceID);
+			if (courseInstance == null)
+			{
+				throw new AppObjectNotFoundException("Course instance not found!");
+			}
+
+			var newProject = new Project();
+			newProject.ID = 0;
+			newProject.CourseInstanceID = courseInstanceID;
+			newProject.Name = model.Name;
+			newProject.ProjectType = model.ProjectType;
+			newProject.Weight = model.Weight;
+
+			// Nullable variables
+			newProject.ProjectGroupID = model.ProjectGroupID;
+			newProject.OnlyIfHigherThanProjectID = model.OnlyIfHigherThanProjectID;
+			newProject.MinGradeToPassCourse = model.MinGradeToPassCourse;
+
+			_projects.Add(newProject);
+			_uow.Save();
+
+			return newProject;
+		}
+
 		public List<CourseInstanceDTO> GetCourseInstancesOnSemester(string semester)
 		{
 			// TODO:

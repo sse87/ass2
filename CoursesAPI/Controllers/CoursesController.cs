@@ -44,5 +44,12 @@ namespace CoursesAPI.Controllers
 		{
 			return _service.GetSemesterCourses(semester);
 		}
+
+		[HttpPost]
+		[Route("{courseInstanceID}/projects")]
+		public Project AddProjectToCourse(int courseInstanceID, Project model)
+		{
+			return _service.AddProjectCourse(courseInstanceID, model);
+		}
 	}
 }

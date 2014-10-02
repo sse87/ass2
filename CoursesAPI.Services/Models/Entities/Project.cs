@@ -38,22 +38,22 @@ namespace CoursesAPI.Services.Models.Entities
 		/// <summary>
 		/// The ID of the course instance the given teacher is teaching
 		/// </summary>
-		public int CourceInstanceID { get; set; }
+		public int CourseInstanceID { get; set; }
 
 		/// <summary>
 		/// The ID of a project group if there is one
 		/// </summary>
-		public int ProjectGroupID { get; set; }
+		public int? ProjectGroupID { get; set; }
 
 		/// <summary>
 		/// The ID of the project .... TODO!
 		/// </summary>
-		public int OnlyIfHigherThemProjectID { get; set; }
+		public int? OnlyIfHigherThanProjectID { get; set; }
 
 		/// <summary>
 		/// The minimum grade of this project to pass the cource
 		/// </summary>
-		public double MinGradeToPassCourse { get; set; }
+		public double? MinGradeToPassCourse { get; set; }
 
 		[ForeignKey("ProjectGroupID")]
 		public ProjectGroup ProjectGroup { get; set; }
