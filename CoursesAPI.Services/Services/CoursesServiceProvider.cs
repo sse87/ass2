@@ -18,9 +18,9 @@ namespace CoursesAPI.Services.Services
 		private readonly IRepository<CourseTemplate> _courseTemplates; 
 		private readonly IRepository<Person> _persons;
 		private readonly IRepository<StudentRegistration> _studentRegistrations;
-		//private readonly IRepository<Project> _projects;
-		//private readonly IRepository<ProjectGroup> _projectGroups;
-		//private readonly IRepository<Grade> _grades;
+		private readonly IRepository<Project> _projects;
+		private readonly IRepository<ProjectGroup> _projectGroups;
+		private readonly IRepository<Grade> _grades;
 
 		public CoursesServiceProvider(IUnitOfWork uow)
 		{
@@ -31,9 +31,9 @@ namespace CoursesAPI.Services.Services
 			_teacherRegistrations = _uow.GetRepository<TeacherRegistration>();
 			_persons              = _uow.GetRepository<Person>();
 			_studentRegistrations = _uow.GetRepository<StudentRegistration>();
-			//_projects             = _uow.GetRepository<Project>();
-			//_projectGroups        = _uow.GetRepository<ProjectGroup>();
-			//_grades               = _uow.GetRepository<Grade>();
+			_projects             = _uow.GetRepository<Project>();
+			_projectGroups        = _uow.GetRepository<ProjectGroup>();
+			_grades               = _uow.GetRepository<Grade>();
 		}
 
 		public List<Person> GetCourseStudents(int courseInstanceID)
