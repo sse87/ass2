@@ -15,9 +15,12 @@ namespace CoursesAPI.Services.Services
 
 		private readonly IRepository<CourseInstance> _courseInstances;
 		private readonly IRepository<TeacherRegistration> _teacherRegistrations;
-		private readonly IRepository<StudentRegistration> _studentRegistrations;
 		private readonly IRepository<CourseTemplate> _courseTemplates; 
 		private readonly IRepository<Person> _persons;
+		private readonly IRepository<StudentRegistration> _studentRegistrations;
+		//private readonly IRepository<Project> _projects;
+		//private readonly IRepository<ProjectGroup> _projectGroups;
+		//private readonly IRepository<Grade> _grades;
 
 		public CoursesServiceProvider(IUnitOfWork uow)
 		{
@@ -26,8 +29,11 @@ namespace CoursesAPI.Services.Services
 			_courseInstances      = _uow.GetRepository<CourseInstance>();
 			_courseTemplates      = _uow.GetRepository<CourseTemplate>();
 			_teacherRegistrations = _uow.GetRepository<TeacherRegistration>();
-			_studentRegistrations = _uow.GetRepository<StudentRegistration>();
 			_persons              = _uow.GetRepository<Person>();
+			_studentRegistrations = _uow.GetRepository<StudentRegistration>();
+			//_projects             = _uow.GetRepository<Project>();
+			//_projectGroups        = _uow.GetRepository<ProjectGroup>();
+			//_grades               = _uow.GetRepository<Grade>();
 		}
 
 		public List<Person> GetCourseStudents(int courseInstanceID)
@@ -42,7 +48,7 @@ namespace CoursesAPI.Services.Services
 			var result = (from sr in _studentRegistrations.All()
 						  join p in _persons.All() on sr.SSN equals p.SSN
 						  where sr.CourseInstanceID == courseInstanceID
-						  && sr.Status == 1//1 = virkur nemandi
+						  && sr.Status == StudentRegistration.StudentRegistrationStatus.Active
 						  select p).ToList();
 
 			return result;
@@ -50,8 +56,19 @@ namespace CoursesAPI.Services.Services
 
 		public List<Person> GetCourseTeachers(int courseInstanceID)
 		{
-			// TODO:
-			return null;
+			var courseInstance = _courseInstances.All()
+				.SingleOrDefault(ci => ci.ID == courseInstanceID);
+			if (courseInstance == null)
+			{
+				throw new AppObjectNotFoundException("Course instance not found!");
+			}
+
+			var result = (from tr in _teacherRegistrations.All()
+							  join p in _persons.All() on tr.SSN equals p.SSN
+							  where tr.CourseInstanceID == courseInstanceID
+							  select p).ToList();
+
+			return result;
 		}
 
 		public List<CourseInstanceDTO> GetCourseInstancesOnSemester(string semester)

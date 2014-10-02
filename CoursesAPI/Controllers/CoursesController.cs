@@ -17,10 +17,26 @@ namespace CoursesAPI.Controllers
 			_service = new CoursesServiceProvider(new UnitOfWork<AppDataContext>());
 		}
 
+		/// <summary>
+		/// Get list of teachers in course instance
+		/// </summary>
+		/// <param name="courseInstanceID"></param>
+		/// <returns></returns>
 		[Route("{courseInstanceID}/teachers")]
 		public List<Person> GetCourseTeachers(int courseInstanceID)
 		{
 			return _service.GetCourseTeachers(courseInstanceID);
+		}
+
+		/// <summary>
+		/// Get list of students in course instance
+		/// </summary>
+		/// <param name="courseInstanceID"></param>
+		/// <returns></returns>
+		[Route("{courseInstanceID}/students")]
+		public List<Person> GetCourseStudents(int courseInstanceID)
+		{
+			return _service.GetCourseStudents(courseInstanceID);
 		}
 		
 		[Route("semester/{semester}")]

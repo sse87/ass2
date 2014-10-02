@@ -10,6 +10,10 @@ namespace CoursesAPI.Services.DataAccess
 		public DbSet<CourseTemplate>      CourseTemplates      { get; set; }
 		public DbSet<CourseInstance>      CourseInstances      { get; set; }
 		public DbSet<TeacherRegistration> TeacherRegistrations { get; set; }
+		public DbSet<StudentRegistration> StudentRegistrations { get; set; }
+		//public DbSet<Project>             Project              { get; set; }
+		//public DbSet<ProjectGroup>        ProjectGroup         { get; set; }
+		//public DbSet<Grade>               Grade                { get; set; }
 
 		protected override void OnModelCreating(DbModelBuilder modelBuilder)
 		{

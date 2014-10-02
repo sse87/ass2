@@ -25,9 +25,16 @@
 		/// The type of teacher:
 		/// 1: main teacher
 		/// 2: assistant teacher
-		/// 3: 
 		/// </summary>
-		public int    Type             { get; set; }
+		public TeacherRegistrationType Type { get; set; }
 
+
+
+		/// <summary>
+		/// The type of teacher:
+		/// 1: main teacher
+		/// 2: assistant teacher
+		/// </summary>
+		public enum TeacherRegistrationType { MainTeacher, AssistantTeacher }
 	}
 }

@@ -83,7 +83,7 @@ namespace CoursesAPI.Tests.Services
 					ID = 1,
 					SSN = "1203735289",
 					CourseInstanceID = 2,
-					Status = 1
+					Status = StudentRegistration.StudentRegistrationStatus.Active
 				}
 			};
 			_uow.SetRepositoryData(studentRegistration);
