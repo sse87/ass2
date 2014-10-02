@@ -107,14 +107,61 @@ namespace CoursesAPI.Tests.Services
 			var result = _service.GetCourseStudents(courseInstanceID);
 		}
 
+
+
 		[TestMethod]
-		public void CoursesGetStudentListWithDeregisteredStudents()
+		public void CoursesGetTeacherListInEmptyCourse()
 		{
 			// Arrange:
+			const int courseInstanceID = 1;
+
+			var teacherRegistration = new List<TeacherRegistration> { };
+			_uow.SetRepositoryData(teacherRegistration);
 
 			// Act:
+			var result = _service.GetCourseStudents(courseInstanceID);
 
 			// Assert:
+			Assert.AreEqual(0, result.Count, "Fjöldi kennara er rangur!");
+		}
+
+		[TestMethod]
+		public void CoursesGetTeacherListInEmptyCourseWithStudentInOtherCourse()
+		{
+			// Arrange:
+			const int courseInstanceID = 1;
+
+			// Create a list of student registrations,
+			// none in the course we're testing though.
+			var teacherRegistration = new List<TeacherRegistration>
+			{
+				new TeacherRegistration
+				{
+					ID = 1,
+					SSN = "1203735289",
+					CourseInstanceID = 2,
+					Type = TeacherRegistration.TeacherRegistrationType.MainTeacher
+				}
+			};
+			_uow.SetRepositoryData(teacherRegistration);
+
+			// Act:
+			var result = _service.GetCourseStudents(courseInstanceID);
+
+			// Assert:
+			Assert.AreEqual(0, result.Count, "Fjöldi kennara er rangur!");
+		}
+
+		[TestMethod]
+		[ExpectedExceptionWithMessage(typeof(AppObjectNotFoundException), "Course instance not found!")]
+		public void CoursesGetTeacherListInInvalidCourse()
+		{
+			// Arrange:
+			const int courseInstanceID = 3;
+			// Note: no course instance with this ID found in test data
+
+			// Act:
+			var result = _service.GetCourseStudents(courseInstanceID);
 		}
 	}
 }

@@ -55,6 +55,9 @@ namespace CoursesAPI.Services.Models.Entities
 		/// </summary>
 		public double MinGradeToPassCourse { get; set; }
 
+		[ForeignKey("ProjectGroupID")]
+		public ProjectGroup ProjectGroup { get; set; }
+
 
 
 		/// <summary>
@@ -65,6 +68,6 @@ namespace CoursesAPI.Services.Models.Entities
 		/// 4: Lokapróf
 		/// 4: Endurtektarpróf
 		/// </summary>
-		public enum ProjectTypeEnum { Verkefni, Netprof, Midannarprof, Lokaprof, Endurtektarprof }
+		public enum ProjectTypeEnum { Verkefni = 1, Netprof = 2, Midannarprof = 3, Lokaprof = 4, Endurtektarprof = 5 }
 	}
 }

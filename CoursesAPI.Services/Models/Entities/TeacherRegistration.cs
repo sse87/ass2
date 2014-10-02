@@ -35,6 +35,6 @@
 		/// 1: main teacher
 		/// 2: assistant teacher
 		/// </summary>
-		public enum TeacherRegistrationType { MainTeacher, AssistantTeacher }
+		public enum TeacherRegistrationType { MainTeacher = 1, AssistantTeacher = 2 }
 	}
 }

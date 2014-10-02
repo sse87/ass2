@@ -43,6 +43,6 @@ namespace CoursesAPI.Services.Models.Entities
 		/// 2: shitty student
 		/// 3: fucked up student
 		/// </summary>
-		public enum StudentRegistrationStatus { Active, Inactive }
+		public enum StudentRegistrationStatus { Active = 1, Inactive = 2 }
 	}
 }
