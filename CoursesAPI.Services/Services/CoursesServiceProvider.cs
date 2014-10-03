@@ -71,7 +71,7 @@ namespace CoursesAPI.Services.Services
 			return result;
 		}
 
-		public Project AddProjectCourse(int courseInstanceID, Project model)
+		public Project AddProjectToCourse(int courseInstanceID, Project model)
 		{
 			var courseInstance = _courseInstances.All()
 				.SingleOrDefault(ci => ci.ID == courseInstanceID);
@@ -92,10 +92,52 @@ namespace CoursesAPI.Services.Services
 			newProject.OnlyIfHigherThanProjectID = model.OnlyIfHigherThanProjectID;
 			newProject.MinGradeToPassCourse = model.MinGradeToPassCourse;
 
+			if (newProject.ProjectGroupID != null)
+			{
+				newProject.ProjectGroup = _projectGroups.All()
+					.Where(x => x.ID == newProject.ProjectGroupID)
+					.SingleOrDefault();
+				if (newProject.ProjectGroup == null)
+				{
+					throw new AppObjectNotFoundException("ProjectGroup not found!");
+				}
+			}
+
 			_projects.Add(newProject);
 			_uow.Save();
 
 			return newProject;
+		}
+
+		public ProjectGroup AddProjectGroup(ProjectGroup model)
+		{
+			if (string.IsNullOrEmpty(model.Name))
+			{
+				throw new ApplicationException("ProjectGroup model has to have a name, given name is null or empty!");
+			}
+			if (model.GradedProjectCount == 0)
+			{
+				throw new ApplicationException("ProjectGroup model has to have a GradedProjectCount that is higher then zero!");
+			}
+
+			var newPG = new ProjectGroup();
+			newPG.Name = model.Name;
+			newPG.GradedProjectCount = model.GradedProjectCount;
+
+			_projectGroups.Add(newPG);
+			_uow.Save();
+
+			//return newPG;
+			return _projectGroups.All().Where(x => x.Name.Equals(model.Name) && x.GradedProjectCount.Equals(model.GradedProjectCount)).SingleOrDefault();
+		}
+
+		/// <summary>
+		/// Test, can you see this!
+		/// </summary>
+		/// <returns></returns>
+		public List<ProjectGroup> GetProjectGroups()
+		{
+			return _projectGroups.All().OrderBy(x => x.Name).ToList();
 		}
 
 		public List<CourseInstanceDTO> GetCourseInstancesOnSemester(string semester)

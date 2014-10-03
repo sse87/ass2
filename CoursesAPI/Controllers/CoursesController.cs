@@ -7,6 +7,28 @@ using CoursesAPI.Services.Services;
 
 namespace CoursesAPI.Controllers
 {
+	[RoutePrefix("api/projectgroups")]
+	public class ProjectGroupController  : ApiController
+	{
+		private readonly CoursesServiceProvider _service;
+
+		public ProjectGroupController()
+		{
+			_service = new CoursesServiceProvider(new UnitOfWork<AppDataContext>());
+		}
+
+		public List<ProjectGroup> GetProjectGroups()
+		{
+			return _service.GetProjectGroups();
+		}
+
+		[HttpPost]
+		public ProjectGroup AddProjectGroup(ProjectGroup model)
+		{
+			return _service.AddProjectGroup(model);
+		}
+	}
+
 	[RoutePrefix("api/courses")]
 	public class CoursesController : ApiController
 	{
@@ -49,7 +71,7 @@ namespace CoursesAPI.Controllers
 		[Route("{courseInstanceID}/projects")]
 		public Project AddProjectToCourse(int courseInstanceID, Project model)
 		{
-			return _service.AddProjectCourse(courseInstanceID, model);
+			return _service.AddProjectToCourse(courseInstanceID, model);
 		}
 	}
 }

@@ -52,6 +52,8 @@ namespace CoursesAPI.Tests.Services
 			_service = new CoursesServiceProvider(_uow);
 		}
 
+		// ########## GetCourseStudents ########## //
+
 		[TestMethod]
 		public void CoursesGetStudentListInEmptyCourse()
 		{
@@ -108,6 +110,8 @@ namespace CoursesAPI.Tests.Services
 		}
 
 
+		// ########## GetCourseTeachers ########## //
+
 
 		[TestMethod]
 		public void CoursesGetTeacherListInEmptyCourse()
@@ -119,7 +123,7 @@ namespace CoursesAPI.Tests.Services
 			_uow.SetRepositoryData(teacherRegistration);
 
 			// Act:
-			var result = _service.GetCourseStudents(courseInstanceID);
+			var result = _service.GetCourseTeachers(courseInstanceID);
 
 			// Assert:
 			Assert.AreEqual(0, result.Count, "Fjöldi kennara er rangur!");
@@ -146,7 +150,7 @@ namespace CoursesAPI.Tests.Services
 			_uow.SetRepositoryData(teacherRegistration);
 
 			// Act:
-			var result = _service.GetCourseStudents(courseInstanceID);
+			var result = _service.GetCourseTeachers(courseInstanceID);
 
 			// Assert:
 			Assert.AreEqual(0, result.Count, "Fjöldi kennara er rangur!");
@@ -161,7 +165,67 @@ namespace CoursesAPI.Tests.Services
 			// Note: no course instance with this ID found in test data
 
 			// Act:
-			var result = _service.GetCourseStudents(courseInstanceID);
+			var result = _service.GetCourseTeachers(courseInstanceID);
+		}
+
+
+		// ########## AddProjectCourse ########## //
+
+
+		[TestMethod]
+		[ExpectedExceptionWithMessage(typeof(AppObjectNotFoundException), "Course instance not found!")]
+		public void CoursesAddProjectToInvalidCourse()
+		{
+			// Arrange:
+			const int courseInstanceID = 3;
+			// Note: no course instance with this ID found in test data
+
+			// Act:
+			var result = _service.AddProjectToCourse(courseInstanceID, new Project());
+		}
+
+
+		// ########## AddProjectGroup ########## //
+
+
+		[TestMethod]
+		public void ProjectGroupAddWithValidInputsWorks()
+		{
+			// Arrange:
+			var newProjectGroup = new ProjectGroup();
+			newProjectGroup.Name = "Netpróf";
+			newProjectGroup.GradedProjectCount = 5;
+
+			// Act:
+			var result = _service.AddProjectGroup(newProjectGroup);
+
+			// Assert:
+			Assert.AreEqual("Netpróf", result.Name, "ProjectGroup Name er rangur");
+			Assert.AreEqual(5, result.GradedProjectCount, "ProjectGroup GradedProjectCount er rangur!");
+		}
+
+		[TestMethod]
+		[ExpectedExceptionWithMessage(typeof(ApplicationException), "ProjectGroup model has to have a name, given name is null or empty!")]
+		public void ProjectGroupAddWithInvalidName()
+		{
+			// Arrange:
+			var newProjectGroup = new ProjectGroup();
+			newProjectGroup.GradedProjectCount = 5;
+
+			// Act:
+			var result = _service.AddProjectGroup(newProjectGroup);
+		}
+
+		[TestMethod]
+		[ExpectedExceptionWithMessage(typeof(ApplicationException), "ProjectGroup model has to have a GradedProjectCount that is higher then zero!")]
+		public void ProjectGroupAddWithInvalidGradedProjectCount()
+		{
+			// Arrange:
+			var newProjectGroup = new ProjectGroup();
+			newProjectGroup.Name = "Netpróf";
+
+			// Act:
+			var result = _service.AddProjectGroup(newProjectGroup);
 		}
 	}
 }
