@@ -73,5 +73,12 @@ namespace CoursesAPI.Controllers
 		{
 			return _service.AddProjectToCourse(courseInstanceID, model);
 		}
+
+        [HttpPost]
+        [Route("{projectID}/grades")]
+         public GradeDTO AddGradeToProject(int projectID, AddGradeToProjectViewModel model)
+        {
+            return _service.AddGradeToProject(projectID, model);
+        }
 	}
 }
