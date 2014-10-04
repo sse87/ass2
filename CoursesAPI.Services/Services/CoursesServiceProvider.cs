@@ -109,7 +109,7 @@ namespace CoursesAPI.Services.Services
 			return newProject;
 		}
 
-		public ProjectGroup AddProjectGroup(ProjectGroup model)
+        public ProjectGroup AddProjectGroup(AddProjectGroupViewModel model)
 		{
 			if (string.IsNullOrEmpty(model.Name))
 			{

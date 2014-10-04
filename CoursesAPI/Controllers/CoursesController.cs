@@ -23,7 +23,7 @@ namespace CoursesAPI.Controllers
 		}
 
 		[HttpPost]
-		public ProjectGroup AddProjectGroup(ProjectGroup model)
+        public ProjectGroup AddProjectGroup(AddProjectGroupViewModel model)
 		{
 			return _service.AddProjectGroup(model);
 		}
