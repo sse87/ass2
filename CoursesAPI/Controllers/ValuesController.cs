@@ -7,6 +7,7 @@ using System.Web.Http;
 
 namespace CoursesAPI.Controllers
 {
+	/*
 	public class ValuesController : ApiController
 	{
 		// GET api/values
@@ -36,4 +37,5 @@ namespace CoursesAPI.Controllers
 		{
 		}
 	}
+	*/
 }
