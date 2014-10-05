@@ -7,28 +7,6 @@ using CoursesAPI.Services.Services;
 
 namespace CoursesAPI.Controllers
 {
-	[RoutePrefix("api/projectgroups")]
-	public class ProjectGroupController  : ApiController
-	{
-		private readonly CoursesServiceProvider _service;
-
-		public ProjectGroupController()
-		{
-			_service = new CoursesServiceProvider(new UnitOfWork<AppDataContext>());
-		}
-
-		public List<ProjectGroup> GetProjectGroups()
-		{
-			return _service.GetProjectGroups();
-		}
-
-		[HttpPost]
-		public ProjectGroup AddProjectGroup(ProjectGroup model)
-		{
-			return _service.AddProjectGroup(model);
-		}
-	}
-
 	[RoutePrefix("api/courses")]
 	public class CoursesController : ApiController
 	{
@@ -44,6 +22,7 @@ namespace CoursesAPI.Controllers
 		/// </summary>
 		/// <param name="courseInstanceID"></param>
 		/// <returns></returns>
+		/// /api/courses/{courseInstanceID}/teachers
 		[Route("{courseInstanceID}/teachers")]
 		public List<Person> GetCourseTeachers(int courseInstanceID)
 		{
@@ -55,6 +34,7 @@ namespace CoursesAPI.Controllers
 		/// </summary>
 		/// <param name="courseInstanceID"></param>
 		/// <returns></returns>
+		/// /api/courses/{courseInstanceID}/students
 		[Route("{courseInstanceID}/students")]
 		public List<Person> GetCourseStudents(int courseInstanceID)
 		{
@@ -66,6 +46,7 @@ namespace CoursesAPI.Controllers
 		/// </summary>
 		/// <param name="semester"></param>
 		/// <returns></returns>
+		/// /api/courses/semester/{semester}
 		[Route("semester/{semester}")]
 		public List<CourseInstanceDTO> GetCoursesOnSemester(string semester)
 		{
@@ -78,6 +59,7 @@ namespace CoursesAPI.Controllers
 		/// <param name="courseInstanceID"></param>
 		/// <param name="model"></param>
 		/// <returns></returns>
+		/// /api/courses/{courseInstanceID}/projects
 		[HttpPost]
 		[Route("{courseInstanceID}/projects")]
 		public Project AddProjectToCourse(int courseInstanceID, Project model)
@@ -89,6 +71,7 @@ namespace CoursesAPI.Controllers
 		/// Get list of project groups
 		/// </summary>
 		/// <returns></returns>
+		/// /api/courses/projectgroup
 		[Route("projectgroup")]
 		public List<ProjectGroup> GetProjectGroups()
 		{
@@ -100,6 +83,7 @@ namespace CoursesAPI.Controllers
 		/// </summary>
 		/// <param name="projectGroup"></param>
 		/// <returns></returns>
+		/// /api/courses/projectgroup
 		[HttpPost]
 		[Route("projectgroup")]
 		public ProjectGroup AddProjectGroup(ProjectGroup projectGroup)
@@ -113,11 +97,24 @@ namespace CoursesAPI.Controllers
 		/// <param name="projectID"></param>
 		/// <param name="model"></param>
 		/// <returns></returns>
+		/// /api/courses/project/{projectID}/grade
 		[HttpPost]
-		[Route("{projectID}/grades")]
+		[Route("project/{projectID}/grade")]
 		public GradeDTO AddGradeToProject(int projectID, GradeToProjectViewModel model)
 		{
 			return _service.AddGradeToProject(projectID, model);
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="projectID"></param>
+		/// <returns></returns>
+		/// /api/courses/project/{projectID}/{SSN}/grade
+		[Route("project/{projectID}/{SSN}/grade")]
+		public GradeDTO GetProjectGrade(int projectID, string SSN)
+		{
+			return _service.GetProjectGrade(projectID, SSN);
 		}
 	}
 }

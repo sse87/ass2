@@ -113,11 +113,11 @@ namespace CoursesAPI.Services.Services
 		{
 			if (string.IsNullOrEmpty(model.Name))
 			{
-				throw new ApplicationException("ProjectGroup model has to have a name, given name is null or empty!");
+				throw new AppObjectNotFoundException("ProjectGroup model has to have a name, given name is null or empty!");
 			}
 			if (model.GradedProjectCount == 0)
 			{
-				throw new ApplicationException("ProjectGroup model has to have a GradedProjectCount that is higher then zero!");
+				throw new AppObjectNotFoundException("ProjectGroup model has to have a GradedProjectCount that is higher then zero!");
 			}
 
 			var newPG = new ProjectGroup();
@@ -167,7 +167,7 @@ namespace CoursesAPI.Services.Services
 			var project = _projects.All().SingleOrDefault(p => p.ID == projectID);
 			if (project == null)
 			{
-				throw new ArgumentNullException("No project with that id exists");
+				throw new AppObjectNotFoundException("No project with that id exists");
 			}
 
 
@@ -176,7 +176,7 @@ namespace CoursesAPI.Services.Services
 										&& sr.SSN == model.SSN);
 			if (studentRegistration == null)
 			{
-				throw new ArgumentNullException("No student with that SSN is registered in that course");
+				throw new AppObjectNotFoundException("No student with that SSN is registered in that course");
 			}
 
 			
@@ -196,7 +196,36 @@ namespace CoursesAPI.Services.Services
 			gradeDTO.studentName = person.Name;
 			gradeDTO.grade = model.grade;
 			gradeDTO.projectName = project.Name;
-			gradeDTO.courseInstanceName = course.CourseID;
+			gradeDTO.courseName = course.CourseID;
+
+			return gradeDTO;
+		}
+
+		public GradeDTO GetProjectGrade(int projectID, string SSN)
+		{
+			var project = _projects.All().SingleOrDefault(p => p.ID == projectID);
+			if (project == null)
+			{
+				throw new AppObjectNotFoundException("No project with that id exists");
+			}
+
+			var person = _persons.All().SingleOrDefault(n => n.SSN == SSN);
+			if (person == null)
+			{
+				throw new AppObjectNotFoundException("No person with that ssn exists");
+			}
+
+			var grade = _grades.All().SingleOrDefault(x => x.SSN == SSN && x.ProjectID == project.ID);
+			var courseTemplate = (from ci in _courseInstances.All()
+								 join ct in _courseTemplates.All() on ci.CourseID equals ct.CourseID
+								 where ci.ID == project.CourseInstanceID
+								 select ct).SingleOrDefault();
+
+			GradeDTO gradeDTO = new GradeDTO();
+			gradeDTO.studentName = person.Name;
+			gradeDTO.grade = grade.ProjectGrade;
+			gradeDTO.projectName = project.Name;
+			gradeDTO.courseName = courseTemplate.Name;
 
 			return gradeDTO;
 		}

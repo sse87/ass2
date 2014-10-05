@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace CoursesAPI.Models
 {
-    public class GradeDTO
-    {
-        public string studentName { get; set; }
-        public double grade { get; set; }
-        public string projectName { get; set; }
-        public string courseInstanceName { get; set; }
-    }
+	public class GradeDTO
+	{
+		public string studentName { get; set; }
+		public double grade { get; set; }
+		public string projectName { get; set; }
+		public string courseName { get; set; }
+	}
 }
