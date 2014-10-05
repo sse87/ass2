@@ -154,12 +154,13 @@ namespace CoursesAPI.Services.Services
 						  {
 							  CourseID = ct.CourseID,
 							  CourseInstanceID = ci.ID,
-							  Name = ct.Name
-							  /*MainTeacher = (from tr in _teacherRegistrations.All()
+							  Name = ct.Name,
+							  MainTeacher = (from tr in _teacherRegistrations.All()
 											 join p in _persons.All() on tr.SSN equals p.SSN
 											 where tr.CourseInstanceID == ci.ID && tr.Type == TeacherRegistration.TeacherRegistrationType.MainTeacher
-											 select p).FirstOrDefault().Name*/
+											 select p).FirstOrDefault().Name
 						  }).ToList();
+			
 			return null;
 		}
 
