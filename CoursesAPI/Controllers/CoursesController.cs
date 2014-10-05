@@ -4,6 +4,7 @@ using CoursesAPI.Models;
 using CoursesAPI.Services.DataAccess;
 using CoursesAPI.Services.Models.Entities;
 using CoursesAPI.Services.Services;
+using CoursesAPI.Services.Exceptions;
 
 namespace CoursesAPI.Controllers
 {
@@ -43,33 +44,62 @@ namespace CoursesAPI.Controllers
 		/// Get list of teachers in course instance
 		/// </summary>
 		/// <param name="courseInstanceID"></param>
-		/// <returns></returns>
+		/// <returns>List<Person></returns>
 		[Route("{courseInstanceID}/teachers")]
-		public List<Person> GetCourseTeachers(int courseInstanceID)
+		public IHttpActionResult GetCourseTeachers(int courseInstanceID)
 		{
-			return _service.GetCourseTeachers(courseInstanceID);
+			List<Person> teachers;
+			try
+			{
+				teachers = _service.GetCourseTeachers(courseInstanceID);
+				return Ok(teachers);
+			}
+			catch (AppObjectNotFoundException ex)
+			{
+				return NotFound();
+			}
+			
 		}
 
 		/// <summary>
 		/// Get list of students in course instance
 		/// </summary>
 		/// <param name="courseInstanceID"></param>
-		/// <returns></returns>
+		/// <returns>List<Person></returns>
 		[Route("{courseInstanceID}/students")]
-		public List<Person> GetCourseStudents(int courseInstanceID)
+		public IHttpActionResult GetCourseStudents(int courseInstanceID)
 		{
-			return _service.GetCourseStudents(courseInstanceID);
+			List<Person> students;
+			try
+			{
+				students = _service.GetCourseStudents(courseInstanceID);
+				return Ok(students);
+			}
+			catch (AppObjectNotFoundException ex)
+			{
+				return NotFound();
+			}
+
 		}
 		
 		/// <summary>
 		/// Get all courses on a given semester
 		/// </summary>
 		/// <param name="semester"></param>
-		/// <returns></returns>
+		/// <returns>List<CourseInstanceDTO></returns>
 		[Route("semester/{semester}")]
-		public List<CourseInstanceDTO> GetCoursesOnSemester(string semester)
+		public IHttpActionResult GetCoursesOnSemester(string semester)
 		{
-			return _service.GetSemesterCourses(semester);
+			List<CourseInstanceDTO> courses;
+			try
+			{
+				courses = _service.GetSemesterCourses(semester);
+				return Ok(courses);
+			}
+			catch (AppObjectNotFoundException ex)
+			{
+				return NotFound();
+			}
 		}
 
 		/// <summary>
@@ -77,34 +107,61 @@ namespace CoursesAPI.Controllers
 		/// </summary>
 		/// <param name="courseInstanceID"></param>
 		/// <param name="model"></param>
-		/// <returns></returns>
+		/// <returns>Project</returns>
 		[HttpPost]
 		[Route("{courseInstanceID}/projects")]
-		public Project AddProjectToCourse(int courseInstanceID, Project model)
+		public IHttpActionResult AddProjectToCourse(int courseInstanceID, Project model)
 		{
-			return _service.AddProjectToCourse(courseInstanceID, model);
+			Project project;
+			try
+			{
+				project = _service.AddProjectToCourse(courseInstanceID, model);
+				return Ok(project);
+			}
+			catch (AppObjectNotFoundException ex)
+			{
+				return BadRequest(ex.Message);
+			}
 		}
 
 		/// <summary>
 		/// Get list of project groups
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>List<ProjectGroup></returns>
 		[Route("projectgroup")]
-		public List<ProjectGroup> GetProjectGroups()
+		public IHttpActionResult GetProjectGroups()
 		{
-			return _service.GetProjectGroups();
+			List<ProjectGroup> projectGroups;
+			try
+			{
+				projectGroups = _service.GetProjectGroups();
+				return Ok(projectGroups);
+			}
+			catch (AppObjectNotFoundException ex)
+			{
+				return NotFound();
+			}
 		}
 
 		/// <summary>
 		/// Insert project group
 		/// </summary>
 		/// <param name="projectGroup"></param>
-		/// <returns></returns>
+		/// <returns>ProjectGroup</returns>
 		[HttpPost]
 		[Route("projectgroup")]
-		public ProjectGroup AddProjectGroup(ProjectGroup projectGroup)
+		public IHttpActionResult AddProjectGroup(ProjectGroup projectGroup)
 		{
-			return _service.AddProjectGroup(projectGroup);
+			ProjectGroup projGroup;
+			try
+			{
+				projGroup = _service.AddProjectGroup(projectGroup);
+				return Ok(projGroup);
+			}
+			catch (AppObjectNotFoundException ex)
+			{
+				return BadRequest(ex.Message);
+			}
 		}
 
 		/// <summary>
@@ -112,12 +169,21 @@ namespace CoursesAPI.Controllers
 		/// </summary>
 		/// <param name="projectID"></param>
 		/// <param name="model"></param>
-		/// <returns></returns>
+		/// <returns>GradeDTO</returns>
 		[HttpPost]
 		[Route("{projectID}/grades")]
-		public GradeDTO AddGradeToProject(int projectID, GradeToProjectViewModel model)
+		public IHttpActionResult AddGradeToProject(int projectID, GradeToProjectViewModel model)
 		{
-			return _service.AddGradeToProject(projectID, model);
+			GradeDTO grade;
+			try
+			{
+				grade = _service.AddGradeToProject(projectID, model);
+				return Ok(grade);
+			}
+			catch (AppObjectNotFoundException ex)
+			{
+				return BadRequest(ex.Message);
+			}
 		}
 	}
 }

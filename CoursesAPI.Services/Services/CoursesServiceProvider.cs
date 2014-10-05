@@ -113,11 +113,11 @@ namespace CoursesAPI.Services.Services
 		{
 			if (string.IsNullOrEmpty(model.Name))
 			{
-				throw new ApplicationException("ProjectGroup model has to have a name, given name is null or empty!");
+				throw new AppObjectNotFoundException("ProjectGroup model has to have a name, given name is null or empty!");
 			}
 			if (model.GradedProjectCount == 0)
 			{
-				throw new ApplicationException("ProjectGroup model has to have a GradedProjectCount that is higher then zero!");
+				throw new AppObjectNotFoundException("ProjectGroup model has to have a GradedProjectCount that is higher then zero!");
 			}
 
 			var newPG = new ProjectGroup();
@@ -153,11 +153,11 @@ namespace CoursesAPI.Services.Services
 						  {
 							  CourseID = ct.CourseID,
 							  CourseInstanceID = ci.ID,
-							  Name = ct.Name,
-							  MainTeacher = (from tr in _teacherRegistrations.All()
+							  Name = ct.Name
+							 /* MainTeacher = (from tr in _teacherRegistrations.All()
 											 join p in _persons.All() on tr.SSN equals p.SSN
 											 where tr.CourseInstanceID == ci.ID && tr.Type == TeacherRegistration.TeacherRegistrationType.MainTeacher
-											 select p).FirstOrDefault().Name
+											 select p).FirstOrDefault().Name*/
 						  }).ToList();
 			
 			return null;
@@ -168,7 +168,7 @@ namespace CoursesAPI.Services.Services
 			var project = _projects.All().SingleOrDefault(p => p.ID == projectID);
 			if (project == null)
 			{
-				throw new ArgumentNullException("No project with that id exists");
+				throw new AppObjectNotFoundException("No project with that id exists");
 			}
 
 
@@ -177,7 +177,7 @@ namespace CoursesAPI.Services.Services
 										&& sr.SSN == model.SSN);
 			if (studentRegistration == null)
 			{
-				throw new ArgumentNullException("No student with that SSN is registered in that course");
+				throw new AppObjectNotFoundException("No student with that SSN is registered in that course");
 			}
 
 			
