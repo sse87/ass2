@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace CoursesAPI.Models
 {
-    public class AddGradeToProjectViewModel
-    {
-        public string SSN { get; set; }
-        public double grade { get; set; }
-    }
+	public class ProjectGroupViewModel
+	{
+		public string Name { get; set; }
+		public int GradedProjectCount { get; set; }
+	}
 }
