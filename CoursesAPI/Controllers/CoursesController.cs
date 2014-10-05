@@ -27,10 +27,9 @@ namespace CoursesAPI.Controllers
 		[Route("{courseInstanceID}/teachers")]
 		public IHttpActionResult GetCourseTeachers(int courseInstanceID)
 		{
-			List<Person> teachers;
 			try
 			{
-				teachers = _service.GetCourseTeachers(courseInstanceID);
+				List<Person> teachers = _service.GetCourseTeachers(courseInstanceID);
 				return Ok(teachers);
 			}
 			catch (AppObjectNotFoundException ex)
@@ -49,10 +48,9 @@ namespace CoursesAPI.Controllers
 		[Route("{courseInstanceID}/students")]
 		public IHttpActionResult GetCourseStudents(int courseInstanceID)
 		{
-			List<Person> students;
 			try
 			{
-				students = _service.GetCourseStudents(courseInstanceID);
+				List<Person> students = _service.GetCourseStudents(courseInstanceID);
 				return Ok(students);
 			}
 			catch (AppObjectNotFoundException ex)
@@ -71,10 +69,9 @@ namespace CoursesAPI.Controllers
 		[Route("semester/{semester}")]
 		public IHttpActionResult GetCoursesOnSemester(string semester)
 		{
-			List<CourseInstanceDTO> courses;
 			try
 			{
-				courses = _service.GetSemesterCourses(semester);
+				List<CourseInstanceDTO> courses = _service.GetSemesterCourses(semester);
 				return Ok(courses);
 			}
 			catch (AppObjectNotFoundException ex)
@@ -94,10 +91,9 @@ namespace CoursesAPI.Controllers
 		[Route("{courseInstanceID}/projects")]
 		public IHttpActionResult AddProjectToCourse(int courseInstanceID, Project model)
 		{
-			Project project;
 			try
 			{
-				project = _service.AddProjectToCourse(courseInstanceID, model);
+				Project project = _service.AddProjectToCourse(courseInstanceID, model);
 				return Ok(project);
 			}
 			catch (AppObjectNotFoundException ex)
@@ -114,10 +110,9 @@ namespace CoursesAPI.Controllers
 		[Route("projectgroup")]
 		public IHttpActionResult GetProjectGroups()
 		{
-			List<ProjectGroup> projectGroups;
 			try
 			{
-				projectGroups = _service.GetProjectGroups();
+				List<ProjectGroup> projectGroups = _service.GetProjectGroups();
 				return Ok(projectGroups);
 			}
 			catch (AppObjectNotFoundException ex)
@@ -136,10 +131,9 @@ namespace CoursesAPI.Controllers
 		[Route("projectgroup")]
 		public IHttpActionResult AddProjectGroup(ProjectGroup projectGroup)
 		{
-			ProjectGroup projGroup;
 			try
 			{
-				projGroup = _service.AddProjectGroup(projectGroup);
+				ProjectGroup projGroup = _service.AddProjectGroup(projectGroup);
 				return Ok(projGroup);
 			}
 			catch (AppObjectNotFoundException ex)
@@ -158,10 +152,9 @@ namespace CoursesAPI.Controllers
 		[Route("{projectID}/grades")]
 		public IHttpActionResult AddGradeToProject(int projectID, GradeToProjectViewModel model)
 		{
-			GradeDTO grade;
 			try
 			{
-				grade = _service.AddGradeToProject(projectID, model);
+				GradeDTO grade = _service.AddGradeToProject(projectID, model);
 				return Ok(grade);
 			}
 			catch (AppObjectNotFoundException ex)
@@ -171,15 +164,43 @@ namespace CoursesAPI.Controllers
 		}
 
 		/// <summary>
-		/// 
+		/// Returns grade of a given project
 		/// </summary>
 		/// <param name="projectID"></param>
-		/// <returns></returns>
+		/// <returns>GradeViewModel</returns>
 		/// /api/courses/project/{projectID}/{SSN}/grade
 		[Route("project/{projectID}/{SSN}/grade")]
-		public GradeDTO GetProjectGrade(int projectID, string SSN)
+		public IHttpActionResult GetProjectGrades(int projectID, string SSN)
 		{
-			return _service.GetProjectGrade(projectID, SSN);
+			try
+			{
+				GradeViewModel grade = _service.GetProjectGrades(projectID, SSN);
+				return Ok(grade);
+			}
+			catch (AppObjectNotFoundException ex)
+			{
+				return NotFound();
+			}
+			
+		}
+
+		/// <summary>
+		/// Returns all grades of a given course instance
+		/// </summary>
+		/// <returns>CourseGradesViewModel</returns>
+		/// /api/courses/{courseInstanceID}/{SSN}/grade
+		[Route("{courseInstanceID}/{SSN}/grade")]
+		public IHttpActionResult GetCourseGrades(int courseInstanceID, string SSN)
+		{
+			try
+			{
+				CourseGradesViewModel courseGrades = _service.GetCourseGrades(courseInstanceID, SSN);
+				return Ok(courseGrades);
+			}
+			catch (AppObjectNotFoundException ex)
+			{
+				return NotFound();
+			}
 		}
 	}
 }

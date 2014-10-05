@@ -73,8 +73,7 @@ namespace CoursesAPI.Services.Services
 
 		public Project AddProjectToCourse(int courseInstanceID, Project model)
 		{
-			var courseInstance = _courseInstances.All()
-				.SingleOrDefault(ci => ci.ID == courseInstanceID);
+			var courseInstance = _courseInstances.All().SingleOrDefault(ci => ci.ID == courseInstanceID);
 			if (courseInstance == null)
 			{
 				throw new AppObjectNotFoundException("Course instance not found!");
@@ -154,7 +153,7 @@ namespace CoursesAPI.Services.Services
 							  CourseID = ct.CourseID,
 							  CourseInstanceID = ci.ID,
 							  Name = ct.Name
-							 /*MainTeacher = (from tr in _teacherRegistrations.All()
+							  /*MainTeacher = (from tr in _teacherRegistrations.All()
 											 join p in _persons.All() on tr.SSN equals p.SSN
 											 where tr.CourseInstanceID == ci.ID && tr.Type == TeacherRegistration.TeacherRegistrationType.MainTeacher
 											 select p).FirstOrDefault().Name*/
@@ -168,19 +167,14 @@ namespace CoursesAPI.Services.Services
 			var project = _projects.All().SingleOrDefault(p => p.ID == projectID);
 			if (project == null)
 			{
-				throw new AppObjectNotFoundException("No project with that id exists");
+				throw new AppObjectNotFoundException("No project with that ID exists");
 			}
 
-
-			var studentRegistration = _studentRegistrations.All().SingleOrDefault(sr => 
-										sr.CourseInstanceID == project.CourseInstanceID 
-										&& sr.SSN == model.SSN);
+			var studentRegistration = _studentRegistrations.All().SingleOrDefault(x => x.SSN == model.SSN && x.CourseInstanceID == project.CourseInstanceID);
 			if (studentRegistration == null)
 			{
 				throw new AppObjectNotFoundException("No student with that SSN is registered in that course");
 			}
-
-			
 
 			Grade gradeData = new Grade();
 			gradeData.ProjectGrade = model.grade;
@@ -202,33 +196,122 @@ namespace CoursesAPI.Services.Services
 			return gradeDTO;
 		}
 
-		public GradeDTO GetProjectGrade(int projectID, string SSN)
+		public GradeViewModel GetProjectGrades(int projectID, string SSN)
 		{
+			// Get given project
 			var project = _projects.All().SingleOrDefault(p => p.ID == projectID);
 			if (project == null)
 			{
-				throw new AppObjectNotFoundException("No project with that id exists");
+				throw new AppObjectNotFoundException("No project with that ID exists");
 			}
 
+			// Get given student
 			var person = _persons.All().SingleOrDefault(n => n.SSN == SSN);
 			if (person == null)
 			{
-				throw new AppObjectNotFoundException("No person with that ssn exists");
+				throw new AppObjectNotFoundException("No person with that SSN exists");
 			}
 
+			// Get project grade
 			var grade = _grades.All().SingleOrDefault(x => x.SSN == SSN && x.ProjectID == project.ID);
+			if (grade == null)
+			{
+				throw new AppObjectNotFoundException("No grade has been inserted for this project");
+			}
+
+			// Get course template
 			var courseTemplate = (from ci in _courseInstances.All()
 								 join ct in _courseTemplates.All() on ci.CourseID equals ct.CourseID
 								 where ci.ID == project.CourseInstanceID
 								 select ct).SingleOrDefault();
 
-			GradeDTO gradeDTO = new GradeDTO();
-			gradeDTO.studentName = person.Name;
-			gradeDTO.grade = grade.ProjectGrade;
-			gradeDTO.projectName = project.Name;
-			gradeDTO.courseName = courseTemplate.Name;
+			// Build up return variable
+			GradeViewModel gradeVM = new GradeViewModel();
+			gradeVM.CourseName = courseTemplate.Name;
+			gradeVM.ProjectName = project.Name;
+			gradeVM.Grade = grade.ProjectGrade;
 
-			return gradeDTO;
+			// Find out where the user grade 
+			var projectGrades = _grades.All().Where(x => x.ProjectID == project.ID).OrderByDescending(x => x.ProjectGrade);
+			int rankedUpper = -1;
+			int rankedLower = -1;
+			int counter = 1;
+			foreach (var thisGrade in projectGrades)
+			{
+				if (thisGrade.ProjectGrade == grade.ProjectGrade)
+				{
+					if (rankedUpper == -1)
+					{
+						rankedUpper = counter;
+					}
+					rankedLower = counter;
+				}
+				counter++;
+			}
+
+			gradeVM.Rank = new GradeRank
+			{
+				Upper = rankedUpper,
+				Lower = rankedLower,
+				Total = projectGrades.Count()
+			};
+
+			return gradeVM;
+		}
+
+		public GradeViewModel GetCourseFinalGrade(int courseInstanceID, string SSN)
+		{
+			// TODO: Spunring hvernig við ætlum að skila lokaeinkunn af okkur
+			// Á lokaeinkunn að vera 10 eða 3,5 þegar TotalWeight er 35
+
+			return new GradeViewModel
+			{
+				CourseName = "",
+				ProjectName = "",
+				Grade = 0.0,
+				Rank = new GradeRank
+				{
+					Upper = 0,
+					Lower = 0,
+					Total = 0
+				}
+			};
+		}
+
+		public CourseGradesViewModel GetCourseGrades(int courseInstanceID, string SSN)
+		{
+			var courseInstance = _courseInstances.All().SingleOrDefault(ci => ci.ID == courseInstanceID);
+			if (courseInstance == null)
+			{
+				throw new AppObjectNotFoundException("Course instance not found!");
+			}
+
+			var person = _persons.All().SingleOrDefault(n => n.SSN == SSN);
+			if (person == null)
+			{
+				throw new AppObjectNotFoundException("No person with that SSN exists");
+			}
+
+			// Return variable
+			var courseGrades = new CourseGradesViewModel();
+
+			// Insert all course project grades
+			List<GradeViewModel> grades = new List<GradeViewModel>();
+			foreach (var project in _projects.All().Where(x => x.CourseInstanceID == courseInstance.ID))
+			{
+				// Try catch so project with no grade will be ignored
+				try
+				{
+					grades.Add(GetProjectGrades(project.ID, person.SSN));
+				}
+				catch (AppObjectNotFoundException) { }
+			}
+			courseGrades.Grades = grades;
+
+			// Insert final grade
+			courseGrades.FinalGrade = GetCourseFinalGrade(courseInstance.ID, person.SSN);
+
+			return courseGrades;
 		}
 	}
 }
