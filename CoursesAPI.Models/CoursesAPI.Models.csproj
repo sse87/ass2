@@ -40,8 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AddGradeToProjectViewModel.cs" />
-    <Compile Include="AddProjectGroupViewModel.cs" />
+    <Compile Include="GradeToProjectViewModel.cs" />
+    <Compile Include="ProjectGroupViewModel.cs" />
     <Compile Include="CourseInstanceDTO.cs" />
     <Compile Include="GradeDTO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

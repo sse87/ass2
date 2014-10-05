@@ -23,7 +23,7 @@ namespace CoursesAPI.Controllers
 		}
 
 		[HttpPost]
-        public ProjectGroup AddProjectGroup(AddProjectGroupViewModel model)
+		public ProjectGroup AddProjectGroup(ProjectGroup model)
 		{
 			return _service.AddProjectGroup(model);
 		}
@@ -102,7 +102,7 @@ namespace CoursesAPI.Controllers
 		/// <returns></returns>
 		[HttpPost]
 		[Route("projectgroup")]
-		public ProjectGroup AddProjectGroup(AddProjectGroupViewModel projectGroup)
+		public ProjectGroup AddProjectGroup(ProjectGroup projectGroup)
 		{
 			return _service.AddProjectGroup(projectGroup);
 		}
@@ -115,7 +115,7 @@ namespace CoursesAPI.Controllers
 		/// <returns></returns>
 		[HttpPost]
 		[Route("{projectID}/grades")]
-			public GradeDTO AddGradeToProject(int projectID, AddGradeToProjectViewModel model)
+		public GradeDTO AddGradeToProject(int projectID, GradeToProjectViewModel model)
 		{
 			return _service.AddGradeToProject(projectID, model);
 		}

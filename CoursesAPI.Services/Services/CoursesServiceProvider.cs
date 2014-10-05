@@ -109,7 +109,7 @@ namespace CoursesAPI.Services.Services
 			return newProject;
 		}
 
-        public ProjectGroup AddProjectGroup(AddProjectGroupViewModel model)
+        public ProjectGroup AddProjectGroup(ProjectGroup model)
 		{
 			if (string.IsNullOrEmpty(model.Name))
 			{
@@ -127,7 +127,6 @@ namespace CoursesAPI.Services.Services
 			_projectGroups.Add(newPG);
 			_uow.Save();
 
-			//return newPG;
 			return _projectGroups.All().Where(x => x.Name.Equals(model.Name) && x.GradedProjectCount.Equals(model.GradedProjectCount)).SingleOrDefault();
 		}
 
@@ -163,7 +162,7 @@ namespace CoursesAPI.Services.Services
 			return null;
 		}
 
-		public GradeDTO AddGradeToProject(int projectID, AddGradeToProjectViewModel model)
+		public GradeDTO AddGradeToProject(int projectID, GradeToProjectViewModel model)
 		{
 			var project = _projects.All().SingleOrDefault(p => p.ID == projectID);
 			if (project == null)
