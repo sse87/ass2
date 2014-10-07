@@ -220,14 +220,12 @@ namespace CoursesAPI.Services.Services
 			}
 
 			// Get course template
-			var courseTemplate = (from ci in _courseInstances.All()
-								 join ct in _courseTemplates.All() on ci.CourseID equals ct.CourseID
-								 where ci.ID == project.CourseInstanceID
-								 select ct).SingleOrDefault();
+			
 
 			// Build up return variable
 			GradeViewModel gradeVM = new GradeViewModel();
-			gradeVM.CourseName = courseTemplate.Name;
+			gradeVM.PersonName = person.Name;
+			gradeVM.CourseName = GetCourseNameFromInstanceID(project.CourseInstanceID);
 			gradeVM.ProjectName = project.Name;
 			gradeVM.Grade = (float)grade.ProjectGrade;
 
@@ -262,21 +260,23 @@ namespace CoursesAPI.Services.Services
 		public float CalculateFinalGrade(int courseInstanceID, string SSN)
 		{
 			var projects = _projects.All().Where(x => x.CourseInstanceID == courseInstanceID);
-			float finalGrade = (float)0.0;
+			double finalGrade = 0.0;
 			foreach (var project in projects)
 			{
 				var grade = _grades.All().SingleOrDefault(x => x.ProjectID == project.ID && x.SSN == SSN);
 				if (grade != null)
 				{
-					var pros = ((float)project.Weight / 100);
-					var before = (grade.ProjectGrade * pros);
-					var after = (float)before;
-					finalGrade += after;
+					finalGrade += (grade.ProjectGrade * ((double)project.Weight / 100));
 				}
 			}
-			// TODO: round to 0.5 and max 10
-			// also add total weight variable to finalGrade ViewModel
-			return finalGrade;
+			// Round to the nearest 0.5
+			double finalGradeRounded = Math.Round((finalGrade * 2), MidpointRounding.AwayFromZero) / 2;
+			// Chop if it more than 10
+			if (finalGradeRounded > 10.0)
+			{
+				finalGradeRounded = 10;
+			}
+			return (float)finalGradeRounded;
 		}
 
 		public GradeViewModel GetCourseFinalGrade(int courseInstanceID, string SSN)
@@ -306,8 +306,9 @@ namespace CoursesAPI.Services.Services
 
 			return new GradeViewModel
 			{
-				CourseName = "foo",
-				ProjectName = "bar",
+				PersonName = _persons.All().SingleOrDefault(x => x.SSN == SSN).Name,
+				CourseName = GetCourseNameFromInstanceID(courseInstanceID),
+				ProjectName = "Final grade",// Irrelevant
 				Grade = targetStudentFinalGrade,
 				Rank = new GradeRank
 				{
@@ -348,7 +349,8 @@ namespace CoursesAPI.Services.Services
 			}
 			courseGrades.Grades = grades;
 
-			// Insert final grade
+			// Set final grade and it's total weight
+			courseGrades.TotalWeightOfFinalGrade = _projects.All().Where(x => x.CourseInstanceID == courseInstance.ID).Sum(x => x.Weight);
 			courseGrades.FinalGrade = GetCourseFinalGrade(courseInstance.ID, person.SSN);
 
 			return courseGrades;
@@ -374,6 +376,19 @@ namespace CoursesAPI.Services.Services
 			}
 
 			return studentGrades;
+		}
+
+		private string GetCourseNameFromInstanceID(int courseInstanceID)
+		{
+			var courseTemplate = (from ci in _courseInstances.All()
+								  join ct in _courseTemplates.All() on ci.CourseID equals ct.CourseID
+								  where ci.ID == courseInstanceID
+								  select ct).SingleOrDefault();
+			if (courseTemplate != null)
+			{
+				return courseTemplate.Name;
+			}
+			return "";
 		}
 	}
 }

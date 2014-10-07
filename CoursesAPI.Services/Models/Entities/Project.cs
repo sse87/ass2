@@ -11,7 +11,7 @@ namespace CoursesAPI.Services.Models.Entities
 	public class Project
 	{
 		/// <summary>
-		/// A database-generated ID of the course instance.
+		/// A database-generated ID of the project
 		/// </summary>
 		public int ID { get; set; }
 
