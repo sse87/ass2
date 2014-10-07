@@ -190,11 +190,30 @@ namespace CoursesAPI.Controllers
 		/// <returns>CourseGradesViewModel</returns>
 		/// /api/courses/{courseInstanceID}/{SSN}/grade
 		[Route("{courseInstanceID}/{SSN}/grade")]
-		public IHttpActionResult GetCourseGrades(int courseInstanceID, string SSN)
+		public IHttpActionResult GetCourseGradesFromOneStudent(int courseInstanceID, string SSN)
 		{
 			try
 			{
 				CourseGradesViewModel courseGrades = _service.GetCourseGrades(courseInstanceID, SSN);
+				return Ok(courseGrades);
+			}
+			catch (AppObjectNotFoundException ex)
+			{
+				return NotFound();
+			}
+		}
+
+		/// <summary>
+		/// Returns all grades of all students in given course instance
+		/// </summary>
+		/// <param name="courseInstanceID"></param>
+		/// <returns>List<CourseGradesViewModel></returns>
+		[Route("{courseInstanceID}/grade")]
+		public IHttpActionResult GetCourseGrades(int courseInstanceID)
+		{
+			try
+			{
+				List<CourseGradesViewModel> courseGrades = _service.GetStudentsGrade(courseInstanceID);
 				return Ok(courseGrades);
 			}
 			catch (AppObjectNotFoundException ex)

@@ -108,7 +108,7 @@ namespace CoursesAPI.Services.Services
 			return newProject;
 		}
 
-        public ProjectGroup AddProjectGroup(ProjectGroup model)
+		public ProjectGroup AddProjectGroup(ProjectGroup model)
 		{
 			if (string.IsNullOrEmpty(model.Name))
 			{
@@ -229,7 +229,7 @@ namespace CoursesAPI.Services.Services
 			GradeViewModel gradeVM = new GradeViewModel();
 			gradeVM.CourseName = courseTemplate.Name;
 			gradeVM.ProjectName = project.Name;
-			gradeVM.Grade = grade.ProjectGrade;
+			gradeVM.Grade = (float)grade.ProjectGrade;
 
 			// Find out where the user grade 
 			var projectGrades = _grades.All().Where(x => x.ProjectID == project.ID).OrderByDescending(x => x.ProjectGrade);
@@ -259,21 +259,61 @@ namespace CoursesAPI.Services.Services
 			return gradeVM;
 		}
 
+		public float CalculateFinalGrade(int courseInstanceID, string SSN)
+		{
+			var projects = _projects.All().Where(x => x.CourseInstanceID == courseInstanceID);
+			float finalGrade = (float)0.0;
+			foreach (var project in projects)
+			{
+				var grade = _grades.All().SingleOrDefault(x => x.ProjectID == project.ID && x.SSN == SSN);
+				if (grade != null)
+				{
+					var pros = ((float)project.Weight / 100);
+					var before = (grade.ProjectGrade * pros);
+					var after = (float)before;
+					finalGrade += after;
+				}
+			}
+			// TODO: round to 0.5 and max 10
+			// also add total weight variable to finalGrade ViewModel
+			return finalGrade;
+		}
+
 		public GradeViewModel GetCourseFinalGrade(int courseInstanceID, string SSN)
 		{
-			// TODO: Spunring hvernig við ætlum að skila lokaeinkunn af okkur
-			// Á lokaeinkunn að vera 10 eða 3,5 þegar TotalWeight er 35
+			var targetStudentFinalGrade = CalculateFinalGrade(courseInstanceID, SSN);
+
+			var allFinalGrades = new List<float>();
+			foreach (var person in _studentRegistrations.All().Where(x => x.CourseInstanceID == courseInstanceID && x.Status == StudentRegistration.StudentRegistrationStatus.Active))
+			{
+				allFinalGrades.Add(CalculateFinalGrade(courseInstanceID, person.SSN));
+			}
+			int rankedUpper = -1;
+			int rankedLower = -1;
+			int counter = 1;
+			foreach (var thisFinalGrade in allFinalGrades.OrderByDescending(x => x))
+			{
+				if (thisFinalGrade == targetStudentFinalGrade)
+				{
+					if (rankedUpper == -1)
+					{
+						rankedUpper = counter;
+					}
+					rankedLower = counter;
+				}
+				counter++;
+			}
 
 			return new GradeViewModel
 			{
-				CourseName = "",
-				ProjectName = "",
-				Grade = 0.0,
+				CourseName = "foo",
+				ProjectName = "bar",
+				Grade = targetStudentFinalGrade,
 				Rank = new GradeRank
 				{
-					Upper = 0,
-					Lower = 0,
-					Total = 0
+					Upper = rankedUpper,
+					Lower = rankedLower,
+					Total = allFinalGrades.Count()
 				}
 			};
 		}
@@ -312,6 +352,28 @@ namespace CoursesAPI.Services.Services
 			courseGrades.FinalGrade = GetCourseFinalGrade(courseInstance.ID, person.SSN);
 
 			return courseGrades;
+		}
+
+		public List<CourseGradesViewModel> GetStudentsGrade(int courseInstanceID)
+		{
+			var courseInstance = _courseInstances.All().SingleOrDefault(ci => ci.ID == courseInstanceID);
+			if (courseInstance == null)
+			{
+				throw new AppObjectNotFoundException("Course instance not found!");
+			}
+
+			var persons = (from sr in _studentRegistrations.All()
+						   join p in _persons.All() on sr.SSN equals p.SSN
+						   where sr.CourseInstanceID == courseInstance.ID
+						   select p).ToList();
+
+			List<CourseGradesViewModel> studentGrades = new List<CourseGradesViewModel>();
+			foreach (var person in persons)
+			{
+				studentGrades.Add(GetCourseGrades(courseInstance.ID, person.SSN));
+			}
+
+			return studentGrades;
 		}
 	}
 }

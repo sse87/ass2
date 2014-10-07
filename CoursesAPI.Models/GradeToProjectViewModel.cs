@@ -9,6 +9,6 @@ namespace CoursesAPI.Models
 	public class GradeToProjectViewModel
 	{
 		public string SSN { get; set; }
-		public double grade { get; set; }
+		public float grade { get; set; }
 	}
 }

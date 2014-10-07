@@ -10,7 +10,7 @@ namespace CoursesAPI.Models
 	{
 		public string CourseName { get; set; }
 		public string ProjectName { get; set; }
-		public double Grade { get; set; }
+		public float Grade { get; set; }
 		public GradeRank Rank { get; set; }
 	}
 
